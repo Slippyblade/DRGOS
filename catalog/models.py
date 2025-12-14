@@ -2,6 +2,9 @@ from os import name
 from django.db import models
 from autoslug import AutoSlugField
 from mptt.models import MPTTModel, TreeForeignKey
+import eav
+from eav.registry import EavConfig, Attribute
+
 
 class ItemStatus(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -24,25 +27,39 @@ class Category(MPTTModel):
         return self.name
 
 class Condition(models.Model):
-    sku = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Variant(models.Model):
+    parent = models.ForeignKey('CatalogItem', on_delete=models.CASCADE, related_name='conditions')
+    sku = models.CharField(max_length=50, blank=True)
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=3, default=0.000)
     cost = models.DecimalField(max_digits=10, decimal_places=3, default=0.000)
     optimalQty = models.PositiveIntegerField(default=0)
     maxQty = models.PositiveIntegerField(default=0)
     qty = models.PositiveIntegerField(default=0)
-    item = models.ForeignKey('CatalogItem', on_delete=models.CASCADE, related_name='conditions')
 
     def __str__(self):
-        return "Condition"
+        return self.name
+    
+class ProductType(models.Model):
+    name = models.CharField(max_length=100)
+    attributes = models.ManyToManyField(eav.models.Attribute)
+    conditions = models.ManyToManyField(Condition)
+
+    def __str__(self):
+        return self.name
     
 class CatalogItem(models.Model):
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=100)
     slug = AutoSlugField(populate_from='title', unique=True)
-    barcode = models.CharField(max_length=100, unique=True)
+    barcode = models.CharField(max_length=100, unique=True, blank=True, null=True)
+    product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE)
     category = models.ManyToManyField(Category, related_name='items')
     description = models.TextField(blank=True, default='')
-    descriptor = models.JSONField(blank=True, null=True, default=dict)
     image = models.ImageField(upload_to='catalog_images/', blank=True, null=True)
     online = models.BooleanField(default=True)
     status = models.ForeignKey(ItemStatus, on_delete=models.CASCADE, default=1)
@@ -50,3 +67,14 @@ class CatalogItem(models.Model):
 
     def __str__(self):
         return self.title
+    
+class CatalogItemConfig(EavConfig):
+
+    def get_attributes(instance=None):
+        try:
+            pt = instance.product_type      
+            return pt.attributes.all()
+        except:
+            return Attribute.objects.none()
+    
+eav.register(CatalogItem, CatalogItemConfig)

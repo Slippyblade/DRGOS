@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #3rd Party
     'mptt',
+    'eav',
     #Apps
     'catalog',
     'ecom',
@@ -111,3 +112,6 @@ STATICFILES_DIRS = ["static/"]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media/'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+EAV2_PRIMARY_KEY_FIELD = 'django.db.models.BigAutoField'
