@@ -1,0 +1,18 @@
+{% extends "ecom/base.html" %}
+{% block content %}
+<div class=""container">
+    <div class=""row">
+        <br>
+            <div class="col-md-6 offset-md-3">
+                <form method="POST" action="{% url 'register' %}">
+                    {% csrf_token %}
+                    {{ form.as_p}}
+                    <br><br>
+                    <button type="submit" class="btn btn-secondary">Register</button>
+                </form>
+            </div>
+        <br>
+    </div>
+</div>
+
+{% endblock %}
