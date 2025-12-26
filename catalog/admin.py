@@ -14,9 +14,9 @@ class ProductTypeAdmin(admin.ModelAdmin):
     filter_horizontal += [('conditions'),]
 
 class CategoryAdmin(DraggableMPTTAdmin):
-    # mptt_indent_field = "name"
-    list_display = ('tree_actions', 'indented_title',)
-    # list_display_links = ('indented_title',)
+    list_display = ('tree_actions', 'indented_title','slug')
+    prepopulated_fields = {'slug': ('name',)}
+
 
 class VariantInline(admin.TabularInline):
     fields = ('name', 'sku', 'optimalQty', 'maxQty', 'price', 'cost', 'qty')
@@ -32,6 +32,7 @@ class CatalogItemAdmin(BaseEntityAdmin):
     list_filter = ('product_type',)
     search_fields = ('title', 'barcode')
     filter_horizontal = ('category',)
+    prepopulated_fields = {'slug': ('title',)}
     inlines = [VariantInline]
     form = CatalogItemAdminForm
 
