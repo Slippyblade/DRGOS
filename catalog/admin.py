@@ -17,7 +17,6 @@ class CategoryAdmin(DraggableMPTTAdmin):
     list_display = ('tree_actions', 'indented_title','slug')
     prepopulated_fields = {'slug': ('name',)}
 
-
 class VariantInline(admin.TabularInline):
     fields = ('name', 'sku', 'optimalQty', 'maxQty', 'price', 'cost', 'qty')
     model = Variant
