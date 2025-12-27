@@ -1,8 +1,10 @@
 from os import name
 from django.db import models
+from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey
 import eav
 from eav.registry import EavConfig, Attribute
+
 
 
 class ItemStatus(models.Model):
@@ -21,9 +23,17 @@ class Category(MPTTModel):
 
     class Meta:
         verbose_name_plural = 'categories'
+        unique_together = [('parent', 'slug')]
+
+    def get_absolute_url(self):
+        return reverse('category_detail', kwargs={'slug': self.slug})
+
+    # def __str__(self):
+    #     return self.name
 
     def __str__(self):
-        return self.name
+        ancestors = self.get_ancestors(include_self=True)
+        return " / ".join(a.name for a in ancestors)
 
 class Condition(models.Model):
     name = models.CharField(max_length=100)

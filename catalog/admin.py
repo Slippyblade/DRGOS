@@ -45,8 +45,9 @@ class CatalogItemAdmin(BaseEntityAdmin):
             form = NewProductForm(request.POST)
             if form.is_valid():
                 typeID = form.cleaned_data['product_type'].id
-                productName = form.cleaned_data['name']
-                prod = CatalogItem.objects.create(title=productName, product_type_id=typeID)
+                # productName = form.cleaned_data['name']
+                # prod = CatalogItem.objects.create(title=productName, product_type_id=typeID)
+                prod = CatalogItem.objects.create(product_type_id=typeID)
                 pt = ProductType.objects.get(id=typeID)
 
                 #Create Variants based on Conditions associated with the ProductType
